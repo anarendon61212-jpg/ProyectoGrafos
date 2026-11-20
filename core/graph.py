@@ -36,7 +36,8 @@ class Edge:
 
 
 class ElevatedEdge(Edge):
-    def __init__(self, edge_id, u, v, walking_time, motorcycle_time, is_bridge=False, max_resistance=None):
+    def __init__(self, edge_id, u, v, walking_time, motorcycle_time,  is_bridge=False, max_resistance=None, rebuild_time=None):
+
         super().__init__(edge_id, u, v)
 
         self.walking_time = walking_time
@@ -47,11 +48,19 @@ class ElevatedEdge(Edge):
             if max_resistance is None or max_resistance <= 0:
                 raise ValueError("Invalid bridge resistance")
 
+            if rebuild_time is None or rebuild_time <= 0:
+                raise ValueError("Invalid rebuild time")
+
             self.max_resistance = max_resistance
             self.current_resistance = max_resistance
+            self.rebuild_time = rebuild_time
+            self.rebuild_at = None
+
         else:
             self.max_resistance = None
             self.current_resistance = None
+            self.rebuild_time = None
+            self.rebuild_at = None
 
 
 class MazeEdge(Edge):
