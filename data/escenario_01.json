@@ -1,0 +1,49 @@
+{
+  "metadata": {
+    "name": "Escenario 01 - Prueba de carga",
+    "version": "1.0",
+    "author": "Equipo ProyectoGrafos"
+  },
+  "params": {
+    "alpha": 0.5,
+    "beta": 0.1,
+    "K": 2,
+    "D0": 10.0,
+    "budget": 1000,
+    "max_time": 300,
+    "helicopter_cost": 200,
+    "helicopter_speed": 50.0,
+    "helicopter_max_uses": 3
+  },
+  "elevated_graph": {
+    "vertices": [
+      { "id": "E1", "x": 100, "y": 100, "type": "Base" },
+      { "id": "E2", "x": 200, "y": 100, "type": "Candidate" },
+      { "id": "E3", "x": 300, "y": 100, "type": "Transit" },
+      { "id": "E4", "x": 200, "y": 200, "type": "Heliport" }
+    ],
+    "edges": [
+      { "id": "ee1", "u": "E1", "v": "E2", "walking_time": 2.0, "motorcycle_time": 1.0 },
+      { "id": "ee2", "u": "E2", "v": "E3", "walking_time": 3.0, "motorcycle_time": 1.5 },
+      { "id": "ee3", "u": "E2", "v": "E4", "walking_time": 2.5, "motorcycle_time": 1.2, "is_bridge": true, "max_resistance": 5, "rebuild_time": 20.0 }
+    ]
+  },
+  "maze_graph": {
+    "vertices": [
+      { "id": "M1", "x": 100, "y": 400, "is_entry": true },
+      { "id": "M2", "x": 200, "y": 400 },
+      { "id": "M3", "x": 300, "y": 400 },
+      { "id": "M4", "x": 200, "y": 500, "is_exit": true }
+    ],
+    "edges": [
+      { "id": "me1", "u": "M1", "v": "M2", "length": 10.0, "speed": 5.0 },
+      { "id": "me2", "u": "M2", "v": "M3", "length": 6.0, "speed": 2.0 },
+      { "id": "me3", "u": "M2", "v": "M4", "length": 8.0, "speed": 4.0 }
+    ]
+  },
+  "convoy": {
+    "tanks": 1,
+    "trucks": 2,
+    "robot_soldiers": 3
+  }
+}
