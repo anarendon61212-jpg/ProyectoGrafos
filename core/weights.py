@@ -1,5 +1,5 @@
 """Cost functions for graph edges."""
-from core.danger import danger_map
+from systems.danger import danger_map
 
 
 def maze_time(edge):
