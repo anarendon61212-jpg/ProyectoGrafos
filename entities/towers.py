@@ -12,10 +12,11 @@ class Tower:
         self.vertex = vertex
         self.height = height
         self.soldiers = []
+        self.reserved_slots = 0
 
     def free_capacity(self):
-        """How many more soldiers can enter this tower."""
-        return self.MAX_SOLDIERS - len(self.soldiers)
+        """Cuántos pueden entrar contando a los que vienen en camino."""
+        return self.MAX_SOLDIERS - (len(self.soldiers) + self.reserved_slots)
 
     def can_accept(self, soldier):
         """Return True if the soldier can enter without breaking any rule."""
@@ -30,6 +31,7 @@ class Tower:
         soldier.tower = self
         soldier.position = self.vertex
         soldier.in_transit = False
+        self.reserved_slots -= 1
 
     def remove_soldier(self, soldier):
         if soldier not in self.soldiers:
