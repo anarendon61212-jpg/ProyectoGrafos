@@ -5,6 +5,7 @@ from systems.tower_planner import plan_towers
 from core.weights import maze_time, convoy_weight, elevated_walking_time
 from systems.danger import danger_map
 from entities.orders import TransportOrder
+from entities.convoy import Convoy
 
 class Simulation:
     def __init__(self, scenario_data):
@@ -20,10 +21,12 @@ class Simulation:
         self.result = None
         self.budget = self.params["budget"]
         
+        self.convoy = Convoy(scenario_data["convoy"])
+        self.convoy.current_vertex = self.entry_id
+        
         self.towers = []
         self.soldiers = [] 
         self.transit_order = []
-        
 
     def update(self, dt):
         if self.is_game_over:
@@ -82,6 +85,51 @@ class Simulation:
                         order.destination_tower.add_soldier(soldier)
                     order.destination_tower.reserved_slots -= len(order.soldiers)
                     self.transit_order.remove(order)
+                    
+    def _get_convoy_position(self):
+        if not self.convoy.route:
+            v = self.maze.vertices[self.convoy.current_vertex]
+            return v.x, v.y
+            
+        edge = self.convoy.route[0]
+        
+        if edge.u.id == self.convoy.current_vertex:
+            x1, y1 = edge.u.x, edge.u.y
+            x2, y2 = edge.v.x, edge.v.y
+        else:
+            x1, y1 = edge.v.x, edge.v.y
+            x2, y2 = edge.u.x, edge.u.y
+        
+        x_actual = x1 + (x2 - x1) * self.convoy.transit_progress
+        y_actual = y1 + (y2 - y1) * self.convoy.transit_progress
+        
+        return x_actual, y_actual
 
 
-    
+    def _update_combat(self, dt):
+        if self.convoy.is_defeated():
+            return
+        
+        cx, cy = self._get_convoy_position()
+
+        for tower in self.towers:
+            for soldier in tower.soldiers:
+                if not soldier.can_attack():
+                    continue
+                    
+                tx = tower.vertex.x
+                ty = tower.vertex.y
+                distancia = math.hypot(tx - cx, ty - cy)
+                
+                rango_efectivo = soldier.effective_range(self.params["beta"])
+                if distancia <= rango_efectivo:
+                    
+                    danio_este_frame = soldier.damage * soldier.frequency * dt
+                    
+                    target = self.convoy.get_first_alive()
+                    if target:
+                        target.hp -= danio_este_frame
+                        
+                        if target.hp <= 0:
+                            target.hp = 0
+                            self.budget += target.reward
